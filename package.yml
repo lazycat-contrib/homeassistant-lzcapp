@@ -1,0 +1,18 @@
+package: cloud.lazycat.app.homeassistant
+version: 2026.10.1
+name: Home Assistant
+description: Home Assistant Container — local-first home automation with 1000+ integrations, automations and dashboards. Data and control stay on your own LazyCat box. Apache-2.0.
+min_os_version: 1.5.0
+homepage: https://github.com/home-assistant/core
+author: home-assistant
+license: Apache-2.0
+locales:
+  zh:
+    name: "Home Assistant"
+    description: "本地优先的智能家居中枢（Container 版）：自动化、面板与上千集成，数据留在自己的微服上。"
+  zh_CN:
+    name: "Home Assistant"
+    description: "本地优先的智能家居中枢（Container 版）：自动化、面板与上千集成，数据留在自己的微服上。"
+  en:
+    name: "Home Assistant"
+    description: "Local-first home automation (Container): 1000+ integrations, automations and dashboards, with data on your own box."

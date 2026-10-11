@@ -1,0 +1,43 @@
+version: 1
+
+project:
+  root: .
+  build_config: lzc-build.yml
+  package_file: package.yml
+  output: dist/homeassistant.lpk
+  target_arch: amd64
+
+update:
+  strategy: publish
+  allow_downgrade: false
+  version_source:
+    type: image
+    image: app
+
+build:
+  toolchains: []
+  run_buildscript: false
+
+images:
+  # 镜像模式（delivery.mode=mirror）：只读校验，把 manifest 里的镜像改写成加速地址
+  # （GHCR → ghcr.1ms.run），不把镜像搬到懒猫镜像源；因此也不能上官方商店。
+  - id: app
+    target: service
+    service: homeassistant
+    source: ghcr.io/home-assistant/home-assistant
+    channel: stable
+    sort: semver
+    # HA 用 CalVer 三段式（2026.10.1）；排除 stable / beta / dev / rc / 带架构后缀的 tag
+    tag_regex: '^[0-9]+\.[0-9]+\.[0-9]+$'
+    delivery:
+      mode: mirror
+      require_digest_match: true
+
+stores:
+  official:
+    enabled: false
+  private:
+    enabled: true
+    skip_if_version_exists: true
+    name: Home Assistant
+    summary: "Home Assistant（Container）懒猫微服打包：本地优先的智能家居中枢，host 网络保发现，数据在 /lzcapp/var/homeassistant。"

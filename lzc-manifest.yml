@@ -1,0 +1,52 @@
+application:
+  subdomain: homeassistant
+  multi_instance: false
+  upstreams:
+    # network_mode: host 下容器监听的是宿主机网络，LazyCat 用 host.lzcapp 指过去
+    - location: /
+      backend: http://host.lzcapp:8123/
+  # 入口直接放行（不过微服账号）：HA 自带账号体系（首次打开走 onboarding 建房主账号）
+  public_path:
+    - /
+services:
+  homeassistant:
+    # 镜像模式：Action 只读校验后把这行改写成加速地址（GHCR → ghcr.1ms.run）
+    # upstream: ghcr.io/home-assistant/home-assistant:2026.10.1
+    image: ghcr.io/home-assistant/home-assistant:2026.10.1
+    # 上游容器形态：--net=host + /config 持久化 + 容器内以 root 运行
+    # host 网络是上游 Linux 安装文档的推荐做法：mDNS/SSDP 发现、局域网设备直连都靠它
+    network_mode: host
+    # 平台建的 /lzcapp/var/homeassistant 属主是 root，HA 容器本身也以 root 运行
+    user: root
+    environment:
+      TZ: Asia/Shanghai
+    healthcheck:
+      # 镜像是 Debian/uv 系的 Python 运行时（Dockerfile 里就有 python3），
+      # 不赌 curl/wget，用 python3 打 HA 的 PWA manifest 端点
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8123/manifest.json', timeout=5).status==200 else 1)" || exit 1
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 180s
+    binds:
+      - /lzcapp/var/homeassistant:/config
+usage: |
+  Home Assistant（Container 版）是本地优先的智能家居中枢：自动化、面板（Lovelace）、
+  上千个集成，数据与控制全在你自己的微服上。
+
+  【首次使用】
+  打开应用域名 → onboarding 里创建房主账号（数据都在 /lzcapp/var/homeassistant，升级不丢）。
+
+  【网络（重要）】
+  按上游 Linux 安装文档，本应用用了 host 网络：这样 mDNS/SSDP 发现、局域网设备直连
+  （小米、Sonoff、Chromecast、打印机等）才能工作。因此 HA 监听的是宿主机 8123 端口
+  ——如果这个端口被别的东西占了，需要在 configuration.yaml 里换端口并同步改 upstream。
+
+  【外接设备】
+  USB 无线网关（Zigbee/Z-Wave 棒）这类需要设备直通，本包没开 privileged；
+  需要时把设备映射进来或改用 HAOS/虚拟机形态。
+
+  【时间】
+  容器时区固定 Asia/Shanghai（TZ），HA 里还可以再按需调整。
