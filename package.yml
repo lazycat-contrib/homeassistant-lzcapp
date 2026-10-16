@@ -1,5 +1,5 @@
 package: cloud.lazycat.app.homeassistant
-version: 2026.10.1
+version: 2026.10.2
 name: Home Assistant
 description: Home Assistant Container — local-first home automation with 1000+ integrations, automations and dashboards. Data and control stay on your own LazyCat box. Apache-2.0.
 min_os_version: 1.5.0

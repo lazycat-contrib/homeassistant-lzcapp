@@ -11,8 +11,8 @@ application:
 services:
   homeassistant:
     # 镜像模式：Action 只读校验后把这行改写成加速地址（GHCR → ghcr.1ms.run）
-    # upstream: ghcr.io/home-assistant/home-assistant:2026.10.1
-    image: ghcr.1ms.run/home-assistant/home-assistant:2026.10.1
+    # upstream: ghcr.io/home-assistant/home-assistant:2026.10.2
+    image: ghcr.1ms.run/home-assistant/home-assistant:2026.10.2
     # 上游容器形态：--net=host + /config 持久化 + 容器内以 root 运行
     # host 网络是上游 Linux 安装文档的推荐做法：mDNS/SSDP 发现、局域网设备直连都靠它
     network_mode: host
